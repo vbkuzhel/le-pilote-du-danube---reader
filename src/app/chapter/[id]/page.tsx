@@ -15,7 +15,7 @@ export async function generateStaticParams() {
   const chapters: Chapter[] = JSON.parse(jsonData);
   
   return chapters.map((chapter) => ({
-    id: chapter.id.toString(),
+    id: chapter.number.toString(),
   }));
 }
 
@@ -24,21 +24,24 @@ async function getChapter(id: string): Promise<Chapter | null> {
   if (!fs.existsSync(filePath)) return null;
   const jsonData = fs.readFileSync(filePath, 'utf-8');
   const chapters: Chapter[] = JSON.parse(jsonData);
-  return chapters.find((c) => c.id === parseInt(id)) || null;
+  return chapters.find((c) => c.number === parseInt(id)) || null;
 }
 
-export default async function ChapterPage({ params }: { params: { id: string } }) {
-    // Await params as per Next.js 15 breaking change requirements if strict mode is on, 
-    // but standard page props usually work. Safe access:
-    const { id } = await params; 
-    const chapter = await getChapter(id);
+export default async function ChapterPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  // Await params as per Next.js 15 breaking change requirements
+  const { id } = await params; 
+  const chapter = await getChapter(id);
 
-    if (!chapter) {
-        notFound();
-    }
+  if (!chapter) {
+    notFound();
+  }
 
-    const nextId = chapter.id < 18 ? chapter.id + 1 : null;
-    const prevId = chapter.id > 1 ? chapter.id - 1 : null;
+  const nextId = chapter.number < 18 ? chapter.number + 1 : null;
+    const prevId = chapter.number > 1 ? chapter.number - 1 : null;
 
     return (
         <div className="min-h-screen bg-paper dark:bg-slate-900 pb-24">
@@ -50,7 +53,7 @@ export default async function ChapterPage({ params }: { params: { id: string } }
                         <span className="font-bold hidden sm:inline">Le Pilote du Danube</span>
                     </Link>
                     <span className="font-serif font-bold text-lg text-gray-800 dark:text-gray-100 truncate max-w-[200px] sm:max-w-none">
-                        Chapter {chapter.id}
+                        Chapter {chapter.number}
                     </span>
                     <div className="flex gap-2">
                         {prevId ? (
@@ -71,24 +74,22 @@ export default async function ChapterPage({ params }: { params: { id: string } }
             <article className="max-w-3xl mx-auto px-6 mt-8">
                 {/* Illustration */}
                 <div className="relative w-full aspect-[16/10] mb-12 rounded-lg overflow-hidden shadow-2xl border-4 border-white dark:border-slate-700">
-                    <div className="absolute inset-0 bg-danube-900 animate-pulse" /> {/* Placeholder */}
-                    <Image
-                        src={`/images/chapter${chapter.id}.png`}
-                        alt={`Illustration for ${chapter.original_title}`}
-                        fill
-                        className="object-cover"
-                        priority
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                        src={`/images/chapter${chapter.number}.png`}
+                        alt={`Illustration for ${chapter.title}`}
+                        className="absolute inset-0 w-full h-full object-cover"
                     />
-                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-8 pt-24">
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-8 pt-24 z-10">
                         <h1 className="text-3xl md:text-5xl font-serif font-bold text-white drop-shadow-md">
-                            {chapter.original_title}
+                            {chapter.title}
                         </h1>
                     </div>
                 </div>
 
                 {/* Text */}
                 <div className="prose prose-lg dark:prose-invert prose-headings:font-serif prose-p:font-serif prose-p:text-gray-800 dark:prose-p:text-gray-300 max-w-none">
-                    <ChapterReader content={chapter.modern_content} />
+                    <ChapterReader content={chapter.text} />
                 </div>
             </article>
 

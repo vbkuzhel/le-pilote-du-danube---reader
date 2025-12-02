@@ -1,7 +1,7 @@
 export interface Chapter {
-  id: number;
-  original_title: string;
-  modern_content: string;
+  number: number;
+  title: string;
+  text: string;
 }
 
 export interface TranslationResponse {
