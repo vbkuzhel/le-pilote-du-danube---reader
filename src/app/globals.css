@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 253, 251, 247; /* Paper color */
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 15, 23, 42; /* Slate 900 */
+    --background-end-rgb: 2, 6, 23;     /* Slate 950 */
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+
+.word-interactive {
+  cursor: pointer;
+  border-bottom: 1px dotted transparent;
+  transition: all 0.2s ease;
+}
+
+.word-interactive:hover {
+  border-bottom-color: #0ea5e9; /* danube-500 */
+  color: #0284c7; /* danube-600 */
+  background-color: rgba(14, 165, 233, 0.1);
+  border-radius: 2px;
+}
+
+.word-active {
+  background-color: rgba(14, 165, 233, 0.2);
+  color: #0ea5e9;
+  font-weight: 600;
+}
